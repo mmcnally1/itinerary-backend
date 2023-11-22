@@ -7,10 +7,10 @@ const getTrip = asyncHandler(async (req, res) => {
     if (!id) {
         return res.status(400).json({ message: "Trip id is required" });
     }
-    
+
     const trip = await Trip.findById(id).exec();
     if (!trip) {
-        return res.status(404).json({ message: "Trip not found" });
+        return res.status(204).json({ message: "Trip not found" });
     }
 
     return res.status(200).json({ trip })
@@ -39,7 +39,7 @@ const createNewTrip = asyncHandler(async (req, res) => {
     if (trip) {
         return res.status(201).json({ message: `Trip to ${trip.destination} created for user ${trip.userId}`})
     } else {
-        res.status(400).json({ message: 'Invalid trip data received' })
+        res.status(500).json({ message: `An error occurred creating trip to ${trip.destination}` })
     }
 })
 
@@ -63,7 +63,7 @@ const updateTrip = asyncHandler(async (req, res) => {
 
     const updatedTrip = await trip.save();
 
-    return res.status(201).json({ message: `Trip to ${updatedTrip.destination} updated for user ${updatedTrip.userId}`})
+    return res.status(200).json({ message: `Trip to ${updatedTrip.destination} updated for user ${updatedTrip.userId}`})
 })
 
 // Should be logged in
@@ -78,7 +78,7 @@ const deleteTrip = asyncHandler(async (req, res) => {
         return res.status(404).json({ message: "Trip not found" });
     }
 
-    return res.status(201).json({ message: `Trip to ${deletedTrip.destination} deleted for user ${deletedTrip.userId}`});
+    return res.status(200).json({ message: `Trip to ${deletedTrip.destination} deleted for user ${deletedTrip.userId}`});
 })
 
 const getItemsByTrip = asyncHandler(async (req, res) => {
@@ -89,7 +89,7 @@ const getItemsByTrip = asyncHandler(async (req, res) => {
 
     const items = await Item.find({ tripId: id }).exec();
     if (!items) {
-        return res.status(404).json({ message: `No items found for trip ${id}` })
+        return res.status(204).json({ message: `No items found for trip ${id}` })
     }
 
     return res.status(200).json({ items })

@@ -6,10 +6,10 @@ const getItem = asyncHandler(async (req, res) => {
     if (!id) {
         return res.status(400).json({ message: "Item id is required" });
     }
-    
+
     const item = await Item.findById(id).exec();
     if (!item) {
-        return res.status(404).json({ message: "item not found" });
+        return res.status(204).json({ message: "item not found" });
     }
 
     return res.status(200).json({ item })
@@ -37,7 +37,7 @@ const createNewItem = asyncHandler(async (req, res) => {
     if (item) {
         return res.status(201).json({ message: `item to ${item.destination} created for trip ${item.tripId}`})
     } else {
-        res.status(400).json({ message: 'Invalid item data received' })
+        res.status(500).json({ message: `An error occurred creating item ${item.destination}` })
     }
 })
 
@@ -60,7 +60,7 @@ const updateItem = asyncHandler(async (req, res) => {
 
     const updatedItem = await item.save();
 
-    return res.status(201).json({ message: `item to ${updatedItem.destination} updated for trip ${updatedItem.tripId}`})
+    return res.status(200).json({ message: `item to ${updatedItem.destination} updated for trip ${updatedItem.tripId}`})
 })
 
 const deleteItem = asyncHandler(async (req, res) => {
@@ -74,7 +74,7 @@ const deleteItem = asyncHandler(async (req, res) => {
         return res.status(404).json({ message: "Item not found" });
     }
 
-    return res.status(201).json({ message: `Item to ${deletedItem.destination} deleted for user ${deletedItem.userId}`});
+    return res.status(200).json({ message: `Item to ${deletedItem.destination} deleted for user ${deletedItem.userId}`});
 })
 
 module.exports = {

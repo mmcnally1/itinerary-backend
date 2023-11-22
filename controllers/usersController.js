@@ -12,7 +12,7 @@ const getUser = asyncHandler(async (req, res) => {
 
     const user = await User.findById(req.query.id).exec();
     if (!user) {
-        return res.status(404).json({ message: "User not found" })
+        return res.status(204).json({ message: "User not found" })
     }
 
     return res.status(200).json({ user });
@@ -34,29 +34,28 @@ const createNewUser = asyncHandler(async (req, res) => {
     if (duplicateEmail) {
         return res.status(409).json({ message: 'An account associated with this email address already exists' })
     }
-    
+
 
     const hashedPwd = await bcrypt.hash(password, 10)
 
     const userObject = { username, "password": hashedPwd, email }
 
     const user = await User.create(userObject)
-
     if (user) {
         res.status(201).json({ message: `New user ${username} created` })
     } else {
-        res.status(400).json({ message: 'Invalid user data received' })
+        res.status(500).json({ message: `An error occurred creating ${username}` })
     }
 })
 
 // Should only be allowed if user is logged in
 const updateUser = asyncHandler(async (req, res) => {
     const { id, password, email, bio, savedTrips, profilePic } = req.body;
-    if (!id) return res.status(404).json({ message: "User id is required" })
+    if (!id) return res.status(400).json({ message: "User id is required" })
 
     const user = await User.findById(id).exec()
     if (!user) {
-        return res.status(400).json({ message: 'User not found' })
+        return res.status(404).json({ message: 'User not found' })
     }
 
     if (username) {
@@ -79,10 +78,10 @@ const updateUser = asyncHandler(async (req, res) => {
     if (profilePic) user.profilePic = profilePic;
     if (savedTrips) user.savedTrips = savedTrips;
     if (password) user.password = await bcrypt.hash(password, 10);
-    
+
     const updatedUser = await user.save();
 
-    res.status(201).json({ message: `${updatedUser.username} updated`})
+    res.status(200).json({ message: `${updatedUser.username} updated`})
 })
 
 // Should only be allowed if user is logged in
@@ -98,7 +97,7 @@ const getTripsByUser = asyncHandler(async (req, res) => {
 
     const trips = await Trip.find({ userId: id }).exec();
     if (!trips) {
-        return res.status(404).json({ message: "No trips found for this user" });
+        return res.status(204).json({ message: "No trips found for this user" });
     }
 
     return res.status(200).json({ trips })
