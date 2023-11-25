@@ -35,7 +35,6 @@ const createNewUser = asyncHandler(async (req, res) => {
         return res.status(409).json({ message: 'An account associated with this email address already exists' })
     }
 
-
     const hashedPwd = await bcrypt.hash(password, 10)
 
     const userObject = { username, "password": hashedPwd, email }
